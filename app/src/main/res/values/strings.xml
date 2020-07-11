@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">QuickTile</string>
+
+    <string name="quick_tile_title">Quick Tile</string>
 </resources>

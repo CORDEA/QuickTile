@@ -1,46 +1,41 @@
 package jp.cordea.quicktile
 
-import android.content.Context
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class QuickTileService : TileService() {
-    companion object {
-        private const val PREFERENCE_NAME = "jp.cordea.quicktile.pref"
+class QuickTileService : TileService(), CoroutineScope by MainScope() {
+    @Inject
+    lateinit var repository: TileStatusRepository
 
-        private const val ENABLED_KEY = "enabled"
-    }
-
-    private val preferences
-        get() = applicationContext.getSharedPreferences(
-            PREFERENCE_NAME,
-            Context.MODE_PRIVATE
-        )
-
-    private var isEnabled
-        get() = preferences.getBoolean(ENABLED_KEY, false)
-        set(value) {
-            preferences
-                .edit()
-                .putBoolean(ENABLED_KEY, value)
-                .apply()
-        }
-
+    @ExperimentalCoroutinesApi
     override fun onStartListening() {
         super.onStartListening()
-        refresh()
+        launch {
+            repository.observe()
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    qsTile.state = it
+                    qsTile.updateTile()
+                }
+        }
     }
 
     override fun onClick() {
         super.onClick()
-        isEnabled = !isEnabled
-        refresh()
+        when (repository.find()) {
+            Tile.STATE_INACTIVE -> repository.update(Tile.STATE_ACTIVE)
+            Tile.STATE_ACTIVE -> repository.update(Tile.STATE_INACTIVE)
+        }
     }
 
-    private fun refresh() {
-        qsTile.state = if (isEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        qsTile.updateTile()
+    override fun onDestroy() {
+        super.onDestroy()
+        cancel()
     }
 }

@@ -2,4 +2,8 @@
     <string name="app_name">QuickTile</string>
 
     <string name="quick_tile_title">Quick Tile</string>
+
+    <string name="main_active">active</string>
+    <string name="main_inactive">inactive</string>
+    <string name="main_unavailable">unavailable</string>
 </resources>

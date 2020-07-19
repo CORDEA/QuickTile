@@ -14,10 +14,12 @@ class QuickTileService : TileService(), CoroutineScope by MainScope() {
     @Inject
     lateinit var repository: TileStatusRepository
 
+    private var job: Job? = null
+
     @ExperimentalCoroutinesApi
     override fun onStartListening() {
         super.onStartListening()
-        launch {
+        job = launch {
             repository.observe()
                 .flowOn(Dispatchers.IO)
                 .collect {
@@ -42,6 +44,11 @@ class QuickTileService : TileService(), CoroutineScope by MainScope() {
             Tile.STATE_INACTIVE -> repository.update(Tile.STATE_ACTIVE)
             Tile.STATE_ACTIVE -> repository.update(Tile.STATE_INACTIVE)
         }
+    }
+
+    override fun onStopListening() {
+        super.onStopListening()
+        job?.cancel()
     }
 
     override fun onDestroy() {

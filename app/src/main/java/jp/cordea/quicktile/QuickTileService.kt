@@ -3,7 +3,9 @@ package jp.cordea.quicktile
 import android.content.Context
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class QuickTileService : TileService() {
     companion object {
         private const val PREFERENCE_NAME = "jp.cordea.quicktile.pref"

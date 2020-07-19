@@ -25,6 +25,7 @@ class TileStatusRepository @Inject constructor(
                 }
             }
         preferences.registerOnSharedPreferenceChangeListener(listener)
+        sendBlocking(find())
         awaitClose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
 

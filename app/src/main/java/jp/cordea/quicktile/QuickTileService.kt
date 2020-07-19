@@ -1,5 +1,6 @@
 package jp.cordea.quicktile
 
+import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,6 +22,15 @@ class QuickTileService : TileService(), CoroutineScope by MainScope() {
                 .flowOn(Dispatchers.IO)
                 .collect {
                     qsTile.state = it
+                    qsTile.icon = Icon.createWithResource(
+                        applicationContext,
+                        when (it) {
+                            Tile.STATE_ACTIVE -> R.drawable.ic_hourglass_full
+                            Tile.STATE_INACTIVE -> R.drawable.ic_hourglass_empty
+                            Tile.STATE_UNAVAILABLE -> R.drawable.ic_hourglass_disabled
+                            else -> throw IllegalArgumentException()
+                        }
+                    )
                     qsTile.updateTile()
                 }
         }

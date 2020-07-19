@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 private const val PREFERENCE_NAME = "jp.cordea.quicktile.pref"
 
@@ -15,6 +16,6 @@ private const val PREFERENCE_NAME = "jp.cordea.quicktile.pref"
 class AppModule {
     @Provides
     @Reusable
-    fun providePreferences(context: Context): SharedPreferences =
+    fun providePreferences(@ApplicationContext context: Context): SharedPreferences =
         context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
 }
